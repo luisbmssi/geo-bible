@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import type { SoldCitiesMap, CityIndex } from "../components/Map";
 import { useIsMobile } from "@/app/hooks/useIsMobile";
 import MobileView from "../components/MobileView";
+import Sidebar from "@/components/Sidebar";
 
 const MapChart = dynamic(() => import("../components/Map"), {
   ssr: false,
@@ -50,6 +51,15 @@ export default function Home() {
   const soldCount = Object.values(soldCities).filter(Boolean).length;
   const availableCount = TOTAL_CITIES - soldCount;
 
+  if (isMobile === null) {
+    return (
+      <div className="map-loading">
+        <div className="loading-ornament">✦</div>
+        <p>Carregando…</p>
+      </div>
+    );
+  }
+
   // ── Mobile ──────────────────────────────────────────────────────────────
   if (isMobile) {
     return (
@@ -64,53 +74,12 @@ export default function Home() {
   // ── Desktop ─────────────────────────────────────────────────────────────
   return (
     <div className="page-shell">
-      <aside className="sidebar">
-        <div className="sidebar-ornament">— ✦ —</div>
-        <h1 className="sidebar-title">O Livro das Cidades</h1>
-        <p className="sidebar-subtitle">Edição Única · Brasil</p>
-        <hr className="sidebar-divider" />
-        <p className="sidebar-desc">
-          Um exemplar manuscrito, único e intransferível, destinado
-          a cada município do Brasil. Quando vendido, aquela cidade
-          está para sempre marcada na história deste livro.
-        </p>
-
-        <p className="legend-title">Legenda</p>
-        <div className="legend-item">
-          <div className="legend-dot available" />
-          <span>Disponível</span>
-        </div>
-        <div className="legend-item">
-          <div className="legend-dot sold" />
-          <span>Vendido</span>
-        </div>
-        <div className="legend-item">
-          <div className="legend-dot highlight" />
-          <span>Município buscado</span>
-        </div>
-
-        <div className="stats-block">
-          <div className="stat-row">
-            <span>Municípios</span>
-            <span className="stat-number">{TOTAL_CITIES.toLocaleString("pt-BR")}</span>
-          </div>
-          <div className="stat-row">
-            <span>Disponíveis</span>
-            <span className="stat-number">{availableCount.toLocaleString("pt-BR")}</span>
-          </div>
-          <div className="stat-row">
-            <span>Vendidos</span>
-            <span className="stat-number">{soldCount}</span>
-          </div>
-        </div>
-
-        <p className="breadcrumb">
-          {currentState
-            ? (<>Brasil › <strong>{currentState.toUpperCase()}</strong></>)
-            : "Clique em um estado para explorar"}
-        </p>
-      </aside>
-
+      <Sidebar
+        currentState={currentState}
+        totalCities={TOTAL_CITIES}
+        soldCount={soldCount}
+        availableCount={availableCount}
+      />
       <main className="map-area">
         <div className="map-inner">
           <MapChart
