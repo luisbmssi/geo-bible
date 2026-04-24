@@ -1,46 +1,48 @@
 import { google } from "googleapis";
 
-let cache: any = null;
-let lastFetch = 0;
+const CACHE_SECONDS = 3600;
 
-const CACHE_TIME = 60 * 1000;
+export interface SheetCity {
+  city?: string;
+  [key: string]: string | null | undefined;
+}
 
-export async function getSheetData() {
-  console.log("Buscando informações...");
-  const now = Date.now();
+export async function getSheetDataCached(): Promise<SheetCity[]> {
+  const sheetId = process.env.GOOGLE_SHEET_ID;
+  const clientEmail = process.env.GOOGLE_CLIENT_EMAIL;
+  const privateKey = process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, "\n");
 
-  if (cache && now - lastFetch < CACHE_TIME) {
-    return cache;
+  if (!sheetId || !clientEmail || !privateKey) {
+    throw new Error("Variáveis de ambiente do Google Sheets não configuradas.");
   }
 
   const auth = new google.auth.GoogleAuth({
-    credentials: {
-      client_email: process.env.GOOGLE_CLIENT_EMAIL,
-      private_key: process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, "\n"),
-    },
+    credentials: { client_email: clientEmail, private_key: privateKey },
     scopes: ["https://www.googleapis.com/auth/spreadsheets.readonly"],
   });
+  const token = await auth.getAccessToken();
 
-  const sheets = google.sheets({ version: "v4", auth });
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/Página1!A:E`;
 
-  const response = await sheets.spreadsheets.values.get({
-    spreadsheetId: process.env.GOOGLE_SHEET_ID,
-    range: "Página1!A:E",
+  const response = await fetch(url, {
+    headers: { Authorization: `Bearer ${token}` },
+    next: { revalidate: CACHE_SECONDS },
   });
 
-  const rows = response.data.values || [];
+  if (!response.ok) {
+    throw new Error(`Erro ao buscar Google Sheets: ${response.status}`);
+  }
 
+  const json = await response.json();
+  const rows: string[][] = json.values || [];
   const [headers, ...data] = rows;
 
-  const formatted = data.map((row) => {
-    return headers.reduce((acc: any, header: string, index: number) => {
-      acc[header] = row[index] || null;
+  if (!headers) return [];
+
+  return data.map((row) =>
+    headers.reduce<SheetCity>((acc, header, index) => {
+      acc[header] = row[index] ?? null;
       return acc;
-    }, {});
-  });
-
-  cache = formatted;
-  lastFetch = now;
-
-  return formatted;
+    }, {})
+  );
 }
