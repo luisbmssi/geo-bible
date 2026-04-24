@@ -6,6 +6,7 @@ let lastFetch = 0;
 const CACHE_TIME = 60 * 1000;
 
 export async function getSheetData() {
+  console.log("Buscando informações...");
   const now = Date.now();
 
   if (cache && now - lastFetch < CACHE_TIME) {
