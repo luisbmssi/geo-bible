@@ -466,3 +466,316 @@ body {
 .suggestion-dot.available {
   background: var(--green);
 }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   MobileView — adicione ao final do globals.css
+   ───────────────────────────────────────────────────────────────────────────── */
+ 
+.mobile-shell {
+    min-height: 100dvh;
+    background: var(--paper-dark);
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem 1.25rem 2rem;
+    gap: 1.25rem;
+    font-family: var(--font-garamond), Georgia, serif;
+    color: var(--ink);
+}
+ 
+/* Header */
+.mobile-header {
+    text-align: center;
+    padding-top: 0.5rem;
+}
+ 
+.mobile-ornament {
+    font-size: 1rem;
+    color: var(--gold);
+    letter-spacing: 0.15em;
+    margin-bottom: 0.6rem;
+}
+ 
+.mobile-title {
+    font-family: var(--font-playfair), Georgia, serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--ink);
+    margin-bottom: 0.25rem;
+}
+ 
+.mobile-subtitle {
+    font-family: var(--font-playfair), Georgia, serif;
+    font-size: 0.85rem;
+    font-style: italic;
+    color: var(--gold);
+}
+ 
+/* Stats */
+.mobile-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.6rem;
+}
+ 
+.mobile-stat-card {
+    background: var(--paper);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.75rem 0.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.2rem;
+}
+ 
+.mobile-stat-card.highlight-green { border-color: var(--green); }
+.mobile-stat-card.highlight-red   { border-color: var(--red); }
+ 
+.mobile-stat-number {
+    font-family: var(--font-playfair), Georgia, serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1;
+}
+ 
+.mobile-stat-label {
+    font-size: 0.72rem;
+    color: var(--ink-faint);
+    text-align: center;
+}
+ 
+/* Descrição */
+.mobile-desc {
+    font-size: 0.9rem;
+    line-height: 1.65;
+    color: var(--ink-mid);
+    text-align: center;
+    padding: 0 0.25rem;
+}
+ 
+/* Busca */
+.mobile-search-wrap {
+    position: relative;
+}
+ 
+.mobile-search-box {
+    display: flex;
+    align-items: center;
+    background: var(--paper);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0 0.75rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+ 
+.mobile-search-icon {
+    font-size: 1.2rem;
+    color: var(--ink-faint);
+    margin-right: 0.5rem;
+    flex-shrink: 0;
+}
+ 
+.mobile-search-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-family: var(--font-garamond), Georgia, serif;
+    font-size: 1rem;
+    color: var(--ink);
+    padding: 0.75rem 0;
+}
+ 
+.mobile-search-input::placeholder {
+    color: var(--ink-faint);
+}
+ 
+.mobile-search-clear {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--ink-faint);
+    font-size: 1.2rem;
+    line-height: 1;
+    padding: 0 0.2rem;
+    transition: color 0.15s;
+}
+ 
+.mobile-search-clear:hover {
+    color: var(--ink);
+}
+ 
+/* Sugestões */
+.mobile-suggestions {
+    list-style: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--paper);
+    border: 1px solid var(--border);
+    border-top: none;
+    border-radius: 0 0 6px 6px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+    z-index: 50;
+    overflow: hidden;
+    max-height: 320px;
+    overflow-y: auto;
+}
+ 
+.mobile-suggestion-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.7rem 0.9rem;
+    cursor: pointer;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.1s;
+}
+ 
+.mobile-suggestion-item:last-child {
+    border-bottom: none;
+}
+ 
+.mobile-suggestion-item:active {
+    background: var(--paper-dark);
+}
+ 
+.mobile-suggestion-left {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    min-width: 0;
+}
+ 
+.mobile-suggestion-name {
+    font-size: 0.95rem;
+    color: var(--ink);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+ 
+.mobile-suggestion-state {
+    font-size: 0.75rem;
+    color: var(--ink-faint);
+    font-style: italic;
+}
+ 
+.mobile-suggestion-badge {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    padding: 0.2rem 0.5rem;
+    border-radius: 3px;
+    flex-shrink: 0;
+    text-transform: uppercase;
+}
+ 
+.mobile-suggestion-badge.available {
+    background: rgba(61, 153, 112, 0.15);
+    color: var(--green-dark);
+}
+ 
+.mobile-suggestion-badge.sold {
+    background: rgba(231, 76, 60, 0.12);
+    color: var(--red-dark);
+}
+ 
+/* Card de resultado */
+.mobile-result-card {
+    background: var(--paper);
+    border-radius: 8px;
+    padding: 1.1rem 1.2rem;
+    border-left: 4px solid transparent;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+ 
+.mobile-result-card.available { border-left-color: var(--green); }
+.mobile-result-card.sold      { border-left-color: var(--red); }
+ 
+.mobile-result-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+}
+ 
+.mobile-result-city {
+    font-family: var(--font-playfair), Georgia, serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.2;
+}
+ 
+.mobile-result-state {
+    font-size: 0.8rem;
+    color: var(--ink-faint);
+    font-style: italic;
+    margin-top: 0.15rem;
+}
+ 
+.mobile-result-badge {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 0.3rem 0.65rem;
+    border-radius: 4px;
+    flex-shrink: 0;
+    margin-top: 0.15rem;
+}
+ 
+.mobile-result-badge.available {
+    background: rgba(61, 153, 112, 0.15);
+    color: var(--green-dark);
+}
+ 
+.mobile-result-badge.sold {
+    background: rgba(231, 76, 60, 0.12);
+    color: var(--red-dark);
+}
+ 
+.mobile-result-divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin-bottom: 0.75rem;
+}
+ 
+.mobile-result-message {
+    font-size: 0.88rem;
+    line-height: 1.65;
+    color: var(--ink-mid);
+    font-style: italic;
+}
+ 
+/* Legenda */
+.mobile-legend {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    margin-top: auto;
+    padding-top: 0.5rem;
+}
+ 
+.mobile-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--ink-mid);
+}
+ 
+.mobile-legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+}
+ 
+.mobile-legend-dot.available { background: var(--green); }
+.mobile-legend-dot.sold      { background: var(--red); }
