@@ -45,3 +45,15 @@ fs.writeFileSync(outputPath, JSON.stringify(index, null, 2));
 console.log(`\n✅ cityIndex.json gerado em: ${outputPath}`);
 console.log(`   Total de municípios: ${Object.keys(index).length}`);
 console.log(`   Com nomes duplicados: ${duplicates.length}\n`);
+
+const rows: string[] = [];
+
+for (const [name, ufs] of Object.entries(index)) {
+    for (const uf of ufs) {
+        rows.push(`${name} - ${uf.toUpperCase()}`);
+    }
+}
+
+rows.sort();
+fs.writeFileSync("municipios.csv", rows.join("\n"));
+console.log(`✅ municipios.csv gerado com ${rows.length} entradas`);
