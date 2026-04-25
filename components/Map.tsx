@@ -258,7 +258,9 @@ export default function MapChart({ soldCities = {}, cityIndex = {}, onStateSelec
                                 {geographies.map((geo) => {
                                     const name = getRegionName(geo);
                                     const uf = getUF(geo);
-                                    const isSold = isStateView ? !!soldCities[name] : false;
+                                    const isSold = isStateView
+                                        ? !!soldCities[`${name}_${selectedState}`]
+                                        : false;
                                     const isHovered = hoveredRegion === (geo.rsmKey as string);
                                     const isHighlighted = isStateView && !!highlightedCity &&
                                         normalize(name) === normalize(highlightedCity);

@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import { useState, useEffect } from "react";
 import type { SoldCitiesMap, CityIndex } from "../components/Map";
 import { useIsMobile } from "@/app/hooks/useIsMobile";
+import { parseCityField } from "@/lib/parseCity";
 import MobileView from "../components/MobileView";
 import Sidebar from "@/components/Sidebar";
 
@@ -31,9 +32,21 @@ export default function Home() {
       .then((r) => r.json())
       .then((response) => {
         const map: SoldCitiesMap = {};
+
         response.data.forEach((item: { city?: string }) => {
-          if (item.city) map[item.city] = true;
+          if (!item.city) return;
+
+          const parsed = parseCityField(item.city);
+
+          if (!parsed) {
+            console.warn(`⚠️ Formato inválido na planilha: "${item.city}"`);
+            return;
+          }
+
+          const key = `${parsed.city}_${parsed.uf}`;
+          map[key] = true;
         });
+
         setSoldCities(map);
       })
       .catch((err) => console.error("Erro ao buscar cidades:", err));

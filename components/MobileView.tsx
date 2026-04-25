@@ -77,7 +77,7 @@ export default function MobileView({
         for (const [name, ufs] of Object.entries(cityIndex)) {
             if (!normalize(name).includes(q)) continue;
             for (const uf of ufs) {
-                found.push({ name, uf, sold: !!soldCities[name] });
+                found.push({ name, uf, sold: !!soldCities[`${name}_${uf}`] });
                 if (found.length >= 12) break;
             }
             if (found.length >= 12) break;
