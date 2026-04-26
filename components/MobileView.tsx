@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type { SoldCitiesMap, CityIndex } from "./Map";
+import type { SoldCitiesMap, CityIndex, SoldCitiesDataMap, SoldCityData } from "./Map";
+import CertificateModal from "./CertificateModal";
 
 interface SearchResult {
     name: string;
@@ -11,6 +12,7 @@ interface SearchResult {
 
 interface MobileViewProps {
     soldCities: SoldCitiesMap;
+    soldCitiesData: SoldCitiesDataMap;
     cityIndex: CityIndex;
     totalCities?: number;
 }
@@ -31,6 +33,7 @@ const UF_NAMES: Record<string, string> = {
 
 export default function MobileView({
     soldCities,
+    soldCitiesData,
     cityIndex,
     totalCities = 5570,
 }: MobileViewProps) {
@@ -44,6 +47,9 @@ export default function MobileView({
     // Flag que impede o useEffect de busca de limpar o selected
     // quando a mudança no query veio de uma seleção (não de digitação)
     const justSelectedRef = useRef(false);
+
+    const [modalOpen, setModalOpen] = useState(false);
+    const [selectedCityData, setSelectedCityData] = useState<SoldCityData | null>(null);
 
     const soldCount = Object.values(soldCities).filter(Boolean).length;
     const availableCount = totalCities - soldCount;
@@ -215,8 +221,27 @@ export default function MobileView({
                             ? "O exemplar destinado a esta cidade já foi adquirido. Esta cidade está para sempre inscrita na história deste livro."
                             : "O exemplar destinado a esta cidade ainda está disponível. Seja o guardião desta história."}
                     </p>
+
+                    {selected.sold && (
+                        <button
+                            className="mobile-cert-btn"
+                            onClick={() => {
+                                const key = `${selected.name}_${selected.uf}`;
+                                const data = soldCitiesData[key];
+                                if (data) { setSelectedCityData(data); setModalOpen(true); }
+                            }}
+                        >
+                            ⬇ Baixar Certificado
+                        </button>
+                    )}
                 </div>
             )}
+
+            <CertificateModal
+                isOpen={modalOpen}
+                onClose={() => setModalOpen(false)}
+                data={selectedCityData}
+            />
 
             {/* ── Legenda ── */}
             <div className="mobile-legend">

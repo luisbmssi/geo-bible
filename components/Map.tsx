@@ -11,8 +11,27 @@ import { geoCentroid } from "d3-geo";
 
 export type SoldCitiesMap = Record<string, boolean>;
 
-// Valor agora é string[] — suporta cidades com mesmo nome em estados diferentes
-export type CityIndex = Record<string, string[]>; // "Presidente Kennedy" → ["es", "to"]
+
+export type CityIndex = Record<string, string[]>;
+
+export interface SoldCityData {
+    city: string;
+    uf: string;
+    bible_id: string;
+    reference: string;
+    name?: string;
+    date?: string;
+}
+
+export type SoldCitiesDataMap = Record<string, SoldCityData>;
+
+interface MapChartProps {
+    soldCities?: SoldCitiesMap;
+    soldCitiesData?: SoldCitiesDataMap;
+    cityIndex?: CityIndex;
+    onStateSelect?: (uf: string | null) => void;
+    onSoldCityClick?: (data: SoldCityData) => void;
+}
 
 interface MapChartProps {
     soldCities?: SoldCitiesMap;
@@ -61,7 +80,7 @@ interface SearchResult {
     sold?: boolean;
 }
 
-export default function MapChart({ soldCities = {}, cityIndex = {}, onStateSelect }: MapChartProps) {
+export default function MapChart({ soldCities = {}, soldCitiesData = {}, cityIndex = {}, onStateSelect, onSoldCityClick }: MapChartProps) {
     const [geoData, setGeoData] = useState<object | null>(null);
     const [selectedState, setSelectedState] = useState<string | null>(null);
     const [isTransitioning, setIsTransitioning] = useState(false);
@@ -129,6 +148,13 @@ export default function MapChart({ soldCities = {}, cityIndex = {}, onStateSelec
 
     const handleStateClick = (uf: string) => {
         if (!selectedState) { setSelectedState(uf); onStateSelect?.(uf); }
+    };
+
+    const handleMunicipalityClick = (name: string, uf: string, isSold: boolean) => {
+        if (isSold && onSoldCityClick) {
+            const data = soldCitiesData[`${name}_${uf}`];
+            if (data) onSoldCityClick(data);
+        }
     };
 
     const handleBack = () => {
@@ -282,18 +308,21 @@ export default function MapChart({ soldCities = {}, cityIndex = {}, onStateSelec
                                                 if (tooltip) setTooltip((t) => t ? { ...t, x: e.clientX, y: e.clientY } : null);
                                             }}
                                             onMouseLeave={() => { setHoveredRegion(null); setTooltip(null); }}
-                                            onClick={() => handleStateClick(uf)}
+                                            onClick={() => {
+                                                if (isStateView) handleMunicipalityClick(name, selectedState!, isSold);
+                                                else handleStateClick(uf);
+                                            }}
                                             style={{
                                                 default: {
                                                     fill: fillColor,
                                                     outline: "none",
                                                     stroke: isHighlighted ? "#8a6d20" : "#1a3a2a",
                                                     strokeWidth: isStateView ? 0.15 : 0.5,
-                                                    cursor: isStateView ? "default" : "pointer",
+                                                    cursor: isStateView ? (isSold ? "pointer" : "default") : "pointer",
                                                     transition: "fill 0.15s ease",
                                                     filter: isHighlighted ? "drop-shadow(0 0 5px rgba(184,150,62,0.9))" : "none",
                                                 },
-                                                hover: { fill: fillColor, outline: "none", stroke: "#0f2419", strokeWidth: isStateView ? 0.2 : 0.7, cursor: isStateView ? "default" : "pointer" },
+                                                hover: { fill: fillColor, outline: "none", stroke: "#0f2419", strokeWidth: isStateView ? 0.2 : 0.7, cursor: isStateView ? (isSold ? "pointer" : "default") : "pointer" },
                                                 pressed: { fill: "#1a5c3a", outline: "none" },
                                             }}
                                         />
