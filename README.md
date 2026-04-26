@@ -1,36 +1,103 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Geo Bíblia
 
-## Getting Started
+Mapa interativo do projeto **O Livro das Cidades** — cada município do Brasil recebe um exemplar manuscrito e único da Bíblia. Este site permite visualizar quais cidades já foram adquiridas e quais ainda estão disponíveis.
 
-First, run the development server:
+🌐 [mapa.oescribadabiblia.com.br](https://mapa.oescribadabiblia.com.br)
+
+## Funcionalidades
+
+- Mapa interativo do Brasil com navegação por estado e município
+- Indicação visual de cidades disponíveis e vendidas
+- Busca de municípios (desktop e mobile)
+- Geração e download de certificado em PDF para cidades adquiridas
+- Dados sincronizados com Google Sheets em tempo real
+- Layout responsivo com experiência otimizada para mobile
+
+## Tecnologias
+
+- [Next.js 14](https://nextjs.org/) — framework React com App Router
+- [react-simple-maps](https://www.react-simple-maps.io/) — renderização do mapa via SVG
+- [d3-geo](https://github.com/d3/d3-geo) — projeções geográficas
+- [googleapis](https://github.com/googleapis/google-api-nodejs-client) — integração com Google Sheets
+- [jsPDF](https://github.com/parallax/jsPDF) — geração de certificados em PDF
+- TypeScript + Tailwind CSS
+
+## Configuração
+
+### Pré-requisitos
+
+- Node.js 18+
+- Conta Google com acesso à API do Google Sheets
+
+### Instalação
+
+```bash
+npm install
+```
+
+### Variáveis de ambiente
+
+Crie um arquivo `.env.local` na raiz com as credenciais da API do Google:
+
+```env
+GOOGLE_SERVICE_ACCOUNT_EMAIL=sua-conta@projeto.iam.gserviceaccount.com
+GOOGLE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
+GOOGLE_SHEET_ID=id_da_sua_planilha
+```
+
+### Formato esperado na planilha
+
+| name       | city           | bible_id | reference   | date       |
+| ---------- | -------------- | -------- | ----------- | ---------- |
+| João Silva | São Paulo - SP | 123abc   | Gênesis 1:1 | 10/01/2026 |
+
+O campo `city` deve seguir o formato `Nome da Cidade - UF`.
+
+### Gerar o índice de cidades
+
+O arquivo `public/cityIndex.json` é necessário para a busca funcionar. Para gerá-lo ou atualizá-lo:
+
+```bash
+npm run generate:city-index
+```
+
+### Rodar localmente
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Acesse [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Build para produção
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+npm start
+```
 
-## Learn More
+## Estrutura do projeto
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+geo-bible/
+├── app/
+│   ├── api/sheets/       # Endpoint que lê o Google Sheets
+│   ├── hooks/            # useIsMobile
+│   ├── globals.css
+│   ├── layout.tsx
+│   └── page.tsx
+├── components/
+│   ├── Map.tsx           # Mapa interativo (desktop)
+│   ├── MobileView.tsx    # Interface de busca (mobile)
+│   ├── Sidebar.tsx       # Painel lateral
+│   └── CertificateModal.tsx  # Modal e geração de PDF
+├── lib/
+│   ├── googleSheets.ts   # Integração com a API
+│   ├── parseCity.ts      # Parser do campo "Cidade - UF"
+│   └── generateCertificate.ts  # Geração do PDF
+├── public/
+│   ├── cityIndex.json    # Índice de municípios para busca
+│   └── geojson/          # Dados geográficos dos estados e municípios
+└── scripts/
+    └── buildCityIndex.ts # Script para gerar o cityIndex.json
+```
