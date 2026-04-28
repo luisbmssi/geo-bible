@@ -58,7 +58,7 @@ export default function CertificateModal({ isOpen, onClose, data }: CertificateM
                     ) : (
                         <>
                             <p className="cert-intro">
-                                Este município foi especialmente adotado no Projeto Geo Bíblia,
+                                Este município foi especialmente adotado no Projeto O Escriba da Bíblia,
                                 contemplado com uma passagem das Sagradas Escrituras.
                             </p>
                             <div className="cert-fields">

@@ -1,4 +1,4 @@
-# Geo Bíblia
+# Geo Bible
 
 Mapa interativo do projeto **O Livro das Cidades** — cada município do Brasil recebe um exemplar manuscrito e único da Bíblia. Este site permite visualizar quais cidades já foram adquiridas e quais ainda estão disponíveis.
 

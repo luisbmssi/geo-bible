@@ -1,6 +1,24 @@
-// lib/generateCertificate.ts — client-side PDF via jsPDF
+// lib/generateCertificate.ts — client-side PDF via jsPDF + QR code de verificação
 import type { CertificateData } from "@/components/CertificateModal";
 export type { CertificateData };
+
+const BASE_URL = "https://mapa.oescribadabiblia.com.br";
+
+/**
+ * Gera uma Data URL de QR code usando a lib `qrcode`.
+ * O QR aponta para a página de verificação do certificado no site.
+ */
+async function generateQRCodeDataURL(text: string): Promise<string> {
+  const QRCode = (await import("qrcode")).default;
+  return QRCode.toDataURL(text, {
+    width: 160,
+    margin: 1,
+    color: {
+      dark: "#3c2305", // marrom escuro — combina com a paleta do certificado
+      light: "#fef9ed", // mesmo fundo pergaminho
+    },
+  });
+}
 
 export async function generateCertificatePDF(
   data: CertificateData,
@@ -17,11 +35,26 @@ export async function generateCertificatePDF(
       year: "numeric",
     });
 
-  // Fundo pergaminho
+  // URL de verificação única por bible_id
+  const verifyURL = `${BASE_URL}/verificar?id=${encodeURIComponent(data.bible_id)}`;
+
+  // Metadados do PDF (visível em "Propriedades" no leitor)
+  doc.setProperties({
+    title: `Certificado de Adoção — ${data.city} (${data.uf.toUpperCase()})`,
+    subject: "Projeto Geo Bíblia — Certificado de Município Adotado",
+    author: "O Escriba da Bíblia",
+    keywords: `certificado, geo bíblia, ${data.city}, ${data.uf}, ${data.bible_id}`,
+    creator: "oescribadabiblia.com.br",
+  });
+
+  // Gerar QR code antes de montar o PDF
+  const qrDataURL = await generateQRCodeDataURL(verifyURL);
+
+  // ── Fundo pergaminho ──────────────────────────────────────────────────────
   doc.setFillColor(247, 242, 230);
   doc.rect(0, 0, pw, ph, "F");
 
-  // Borda dupla
+  // ── Borda dupla ───────────────────────────────────────────────────────────
   doc.setDrawColor(120, 85, 30);
   doc.setLineWidth(1.8);
   doc.rect(10, 10, pw - 20, ph - 20);
@@ -31,12 +64,12 @@ export async function generateCertificatePDF(
   // Ornamentos de canto
   doc.setFontSize(10);
   doc.setTextColor(160, 115, 45);
-  doc.text("✦", 16, 20, { align: "left" });
-  doc.text("✦", pw - 16, 20, { align: "right" });
-  doc.text("✦", 16, ph - 14, { align: "left" });
-  doc.text("✦", pw - 16, ph - 14, { align: "right" });
+  doc.text("†", 16, 18, { align: "left" });
+  doc.text("†", pw - 16, 18, { align: "right" });
+  doc.text("†", 16, ph - 16, { align: "left" });
+  doc.text("†", pw - 16, ph - 16, { align: "right" });
 
-  // Cabeçalho
+  // ── Cabeçalho ─────────────────────────────────────────────────────────────
   doc.setFont("times", "bold");
   doc.setFontSize(10);
   doc.setTextColor(100, 65, 15);
@@ -46,7 +79,7 @@ export async function generateCertificatePDF(
   doc.setTextColor(140, 100, 40);
   doc.text("mapa.oescribadabiblia.com.br", pw / 2, 36, { align: "center" });
 
-  // Linhas decorativas
+  // ── Linhas decorativas ────────────────────────────────────────────────────
   doc.setDrawColor(160, 115, 45);
   doc.setLineWidth(0.3);
   doc.line(28, 40, pw - 28, 40);
@@ -55,7 +88,7 @@ export async function generateCertificatePDF(
   doc.setLineWidth(0.3);
   doc.line(28, 44, pw - 28, 44);
 
-  // Título
+  // ── Título ────────────────────────────────────────────────────────────────
   doc.setFont("times", "bolditalic");
   doc.setFontSize(26);
   doc.setTextColor(60, 35, 5);
@@ -70,7 +103,7 @@ export async function generateCertificatePDF(
     { align: "center" },
   );
 
-  // Texto introdutório
+  // ── Texto introdutório ────────────────────────────────────────────────────
   doc.setFont("times", "normal");
   doc.setFontSize(12);
   doc.setTextColor(45, 28, 5);
@@ -78,7 +111,7 @@ export async function generateCertificatePDF(
   const splitIntro = doc.splitTextToSize(intro, pw - 52);
   doc.text(splitIntro, pw / 2, 82, { align: "center" });
 
-  // Caixa de dados
+  // ── Caixa de dados ────────────────────────────────────────────────────────
   const boxTop = 82 + splitIntro.length * 7 + 8;
   const boxH = 58;
   const boxL = 28;
@@ -93,7 +126,7 @@ export async function generateCertificatePDF(
   doc.setLineWidth(0.3);
   doc.line(boxL + 8, boxTop + 11, boxL + boxW - 8, boxTop + 11);
 
-  let rowY = boxTop + 22;
+  let rowY = boxTop + 18;
   (
     [
       ["Município:", `${data.city} — ${data.uf.toUpperCase()}`],
@@ -113,7 +146,7 @@ export async function generateCertificatePDF(
     rowY += 11.5;
   });
 
-  // Versículo em destaque
+  // ── Versículo em destaque ─────────────────────────────────────────────────
   const verseY = boxTop + boxH + 18;
   doc.setFont("times", "italic");
   doc.setFontSize(12.5);
@@ -130,7 +163,43 @@ export async function generateCertificatePDF(
     align: "center",
   });
 
-  // Linhas do rodapé
+  // ── Seção QR Code de verificação ──────────────────────────────────────────
+  const qrSectionY = verseY + splitVerse.length * 7 + 18;
+  const qrSize = 28; // mm
+  const qrX = pw / 2 - qrSize / 2;
+
+  // Caixinha larga o suficiente para o título e a legenda
+  const boxQrW = 80;
+  const boxQrX = pw / 2 - boxQrW / 2;
+  const boxQrH = qrSize + 22;
+
+  doc.setFillColor(254, 249, 237);
+  doc.setDrawColor(160, 115, 45);
+  doc.setLineWidth(0.5);
+  doc.roundedRect(boxQrX, qrSectionY - 8, boxQrW, boxQrH, 3, 3, "FD");
+
+  // Título da seção — centralizado dentro da caixinha
+  doc.setFont("times", "bold");
+  doc.setFontSize(7.5);
+  doc.setTextColor(110, 72, 18);
+  doc.text("VERIFICAR AUTENTICIDADE", pw / 2, qrSectionY - 1, {
+    align: "center",
+  });
+
+  // QR code — centralizado
+  doc.addImage(qrDataURL, "PNG", qrX, qrSectionY + 4, qrSize, qrSize);
+
+  // Legenda abaixo do QR — quebrada e centralizada dentro da caixinha
+  doc.setFont("times", "italic");
+  doc.setFontSize(7);
+  doc.setTextColor(130, 88, 30);
+  const legendText = doc.splitTextToSize(
+    "Escaneie para confirmar a autenticidade deste certificado",
+    boxQrW - 8,
+  );
+  doc.text(legendText, pw / 2, qrSectionY + qrSize + 10, { align: "center" });
+
+  // ── Linhas do rodapé ──────────────────────────────────────────────────────
   const fy = ph - 30;
   doc.setDrawColor(160, 115, 45);
   doc.setLineWidth(0.3);
@@ -140,7 +209,7 @@ export async function generateCertificatePDF(
   doc.setLineWidth(0.3);
   doc.line(28, fy + 4, pw - 28, fy + 4);
 
-  // Rodapé
+  // ── Rodapé ────────────────────────────────────────────────────────────────
   doc.setFont("times", "italic");
   doc.setFontSize(8.5);
   doc.setTextColor(130, 90, 35);
