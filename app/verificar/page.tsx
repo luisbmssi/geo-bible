@@ -118,9 +118,6 @@ function VerificarContent() {
 
                 {/* Rodapé */}
                 <div style={styles.footer}>
-                    <a href="https://mapa.oescribadabiblia.com.br" style={styles.footerLink}>
-                        ← Voltar ao mapa
-                    </a>
                     <p style={styles.footerText}>oescribadabiblia.com.br</p>
                 </div>
             </div>
