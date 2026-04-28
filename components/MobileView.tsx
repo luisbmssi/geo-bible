@@ -131,7 +131,7 @@ export default function MobileView({
                 </div>
                 <div className="mobile-stat-card highlight-red">
                     <span className="mobile-stat-number">{soldCount}</span>
-                    <span className="mobile-stat-label">Vendidos</span>
+                    <span className="mobile-stat-label">Indisponíveis</span>
                 </div>
             </div>
 
@@ -190,7 +190,7 @@ export default function MobileView({
                                         )}
                                     </div>
                                     <span className={`mobile-suggestion-badge ${r.sold ? "sold" : "available"}`}>
-                                        {r.sold ? "Vendido" : "Disponível"}
+                                        {r.sold ? "Indisponível" : "Disponível"}
                                     </span>
                                 </li>
                             );
@@ -210,7 +210,7 @@ export default function MobileView({
                             </p>
                         </div>
                         <div className={`mobile-result-badge ${selected.sold ? "sold" : "available"}`}>
-                            {selected.sold ? "Vendido" : "Disponível"}
+                            {selected.sold ? "Indisponível" : "Disponível"}
                         </div>
                     </div>
 
@@ -251,7 +251,7 @@ export default function MobileView({
                 </div>
                 <div className="mobile-legend-item">
                     <div className="mobile-legend-dot sold" />
-                    <span>Vendido</span>
+                    <span>Indisponível</span>
                 </div>
             </div>
         </div>

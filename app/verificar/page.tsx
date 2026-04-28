@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 
 interface CertificateRecord {
@@ -13,7 +13,7 @@ interface CertificateRecord {
 
 type Status = "loading" | "found" | "not_found" | "error";
 
-export default function VerificarPage() {
+function VerificarContent() {
     const searchParams = useSearchParams();
     const id = searchParams.get("id");
 
@@ -125,6 +125,23 @@ export default function VerificarPage() {
                 </div>
             </div>
         </main>
+    );
+}
+
+export default function VerificarPage() {
+    return (
+        <Suspense fallback={
+            <main style={styles.page}>
+                <div style={styles.card}>
+                    <div style={styles.body}>
+                        <div style={styles.spinner} />
+                        <p style={styles.message}>Carregando…</p>
+                    </div>
+                </div>
+            </main>
+        }>
+            <VerificarContent />
+        </Suspense>
     );
 }
 

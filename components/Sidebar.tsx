@@ -32,7 +32,7 @@ export default function Sidebar({
             </div>
             <div className="legend-item">
                 <div className="legend-dot sold" />
-                <span>Vendido</span>
+                <span>Indisponível</span>
             </div>
             <div className="legend-item">
                 <div className="legend-dot highlight" />
@@ -49,7 +49,7 @@ export default function Sidebar({
                     <span className="stat-number">{availableCount.toLocaleString("pt-BR")}</span>
                 </div>
                 <div className="stat-row">
-                    <span>Vendidos</span>
+                    <span>Indisponível</span>
                     <span className="stat-number">{soldCount}</span>
                 </div>
             </div>

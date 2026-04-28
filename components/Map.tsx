@@ -251,7 +251,7 @@ export default function MapChart({ soldCities = {}, soldCitiesData = {}, cityInd
                     <span className={`tooltip-dot ${tooltip.sold ? "sold" : "available"}`} />
                     <span className="tooltip-name">{tooltip.name}</span>
                     <span className={`tooltip-status ${tooltip.sold ? "sold" : "available"}`}>
-                        {tooltip.sold ? "Vendido" : "Disponível"}
+                        {tooltip.sold ? "Indisponível" : "Disponível"}
                     </span>
                 </div>
             )}
