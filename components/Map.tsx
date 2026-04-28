@@ -119,7 +119,7 @@ export default function MapChart({ soldCities = {}, soldCitiesData = {}, cityInd
             if (!normalize(name).includes(q)) continue;
 
             for (const uf of ufs) {
-                results.push({ name, uf, sold: soldCities[name] });
+                results.push({ name, uf, sold: soldCities[`${name}_${uf}`] });
                 if (results.length >= 10) break; // limite total de sugestões
             }
             if (results.length >= 10) break;
