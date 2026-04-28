@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState, useCallback, useRef, useMemo } from "react";
 import {
     ComposableMap,
     Geographies,
@@ -93,6 +93,25 @@ export default function MapChart({ soldCities = {}, soldCitiesData = {}, cityInd
     const [showSuggestions, setShowSuggestions] = useState(false);
     const searchRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
+
+    // Computa quais estados têm TODOS os municípios vendidos
+    const soldStates = useMemo(() => {
+        const result: Record<string, boolean> = {};
+        // Agrupa todos os municípios por UF usando o cityIndex
+        const citiesByUF: Record<string, string[]> = {};
+        for (const [cityName, ufs] of Object.entries(cityIndex)) {
+            for (const uf of ufs) {
+                if (!citiesByUF[uf]) citiesByUF[uf] = [];
+                citiesByUF[uf].push(cityName);
+            }
+        }
+        // Verifica se todos os municípios de cada UF estão vendidos
+        for (const [uf, cities] of Object.entries(citiesByUF)) {
+            if (cities.length === 0) continue;
+            result[uf] = cities.every((city) => !!soldCities[`${city}_${uf}`]);
+        }
+        return result;
+    }, [cityIndex, soldCities]);
 
     const isStateView = !!selectedState;
     const projectionConfig = isStateView ? getStateProjection(selectedState) : BRAZIL_PROJECTION;
@@ -294,7 +313,12 @@ export default function MapChart({ soldCities = {}, soldCitiesData = {}, cityInd
                                     let fillColor: string;
                                     if (isHighlighted) fillColor = isHovered ? "#c9a84c" : "#b8963e";
                                     else if (isStateView) fillColor = isSold ? (isHovered ? "#c0392b" : "#e74c3c") : (isHovered ? "#2e7d5e" : "#3d9970");
-                                    else fillColor = isHovered ? "#2e7d5e" : "#4a8c6f";
+                                    else {
+                                        const isStateSold = soldStates[uf];
+                                        fillColor = isStateSold
+                                            ? (isHovered ? "#c0392b" : "#e74c3c")
+                                            : (isHovered ? "#2e7d5e" : "#4a8c6f");
+                                    }
 
                                     return (
                                         <Geography
