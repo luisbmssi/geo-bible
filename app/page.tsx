@@ -77,7 +77,7 @@ export default function Home() {
     return (
       <div className="map-loading">
         <div className="loading-ornament">✦</div>
-        <p>Carregando mapa…</p>
+        <p>Carregando...</p>
       </div>
     );
   }
